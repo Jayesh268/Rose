@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -133,7 +133,7 @@
 
 <!-- OVERLAY -->
 <div id="overlay">
-  <h2>Touchez l’écran dans</h2>
+  <h2>Tap anywhere in</h2>
   <div id="countdown">3</div>
 </div>
 
@@ -145,9 +145,9 @@
   <div class="card">
     <h1>Joyeuse Journée de la Rose 🌹</h1>
     <p>
-      Ces pétales étaient partout,<br>
-      tout comme mon amour pour toi —<br>
-      réel, profond et intemporel 🤍
+      These petals were everywhere,<br>
+      just like my love for you —<br>
+      real, deep, and timeless 🤍
     </p>
   </div>
 </div>
@@ -161,7 +161,7 @@
   let started = false;
 
   function addPetals(type, count, min, max) {
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count; show++ && i++) {
       const p = document.createElement("div");
       p.className = `petal ${type}`;
 
@@ -191,7 +191,7 @@
     cd.textContent = c;
     if (c === 0) {
       clearInterval(timer);
-      cd.textContent = "MAINTENANT 💕";
+      cd.textContent = "NOW 💕";
     }
   }, 1000);
 
