@@ -1,33 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Rose Day 🌹</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Dancing Script', cursive;
+    background: linear-gradient(to bottom, #ffe6eb, #fff5f7);
+  }
+
+  #petal-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .petal {
+    position: absolute;
+    background-image: url("petal.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 1;
+    will-change: transform, opacity;
+    transition:
+      transform 2.8s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 2.2s ease;
+  }
+
+  .back  { filter: blur(2px) saturate(1.4); }
+  .mid   { filter: saturate(1.7); }
+  .front {
+    filter: saturate(1.9)
+            drop-shadow(0 8px 12px rgba(0,0,0,0.35));
+  }
+
+  .fly {
+    opacity: 0;
+    transform: translate3d(
+      calc(var(--dx) * 1px),
+      calc(var(--dy) * 1px),
+      0
+    ) rotate(var(--rot)) scale(0.25);
+  }
+
+  #overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    background: rgba(255,255,255,0.92);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    touch-action: manipulation;
+  }
+
+  #overlay h2 {
+    font-size: 2.2rem;
+    color: #e63946;
+  }
+
+  #countdown {
+    font-size: 3.4rem;
+    margin-top: 12px;
+    font-weight: bold;
+  }
+
+  #message {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 2.8s ease;
+  }
+
+  .card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 16px 45px rgba(0,0,0,0.2);
+    max-width: 90%;
+    text-align: center;
+  }
+
+  .card h1 {
+    font-size: 2.8rem;
+    color: #e63946;
+  }
+
+  .card p {
+    font-size: 1.55rem;
+    color: #555;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- AUDIO -->
+<audio id="bg-music" src="lavie.mp3" preload="auto" playsinline></audio>
+
+<div id="overlay">
+  <h2>Tap anywhere in</h2>
+  <div id="countdown">3</div>
+</div>
+
+<div id="petal-layer"></div>
+
+<div id="message">
+  <div class="card">
+    <h1>Happy Rose Day 🌹</h1>
+    <p>
+      These petals were everywhere,<br>
+      just like my love for you —<br>
+      real, deep, and timeless 🤍
+    </p>
+  </div>
+</div>
+
 <script>
+  const layer = document.getElementById("petal-layer");
   const overlay = document.getElementById("overlay");
-  const music = document.getElementById("bg-music");
-  const petalLayer = document.getElementById("petal-layer");
   const message = document.getElementById("message");
+  const music = document.getElementById("bg-music");
 
   let started = false;
+
+  function addPetals(type, count, min, max) {
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement("div");
+      p.className = `petal ${type}`;
+
+      const size = min + Math.random() * (max - min);
+      p.style.width = size + "px";
+      p.style.height = size + "px";
+      p.style.left = Math.random() * innerWidth + "px";
+      p.style.top = Math.random() * innerHeight + "px";
+      p.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+      p.style.setProperty("--dx", (Math.random() - 0.5) * innerWidth * 2);
+      p.style.setProperty("--dy", (Math.random() - 0.5) * innerHeight * 2);
+      p.style.setProperty("--rot", `${720 + Math.random() * 720}deg`);
+
+      layer.appendChild(p);
+    }
+  }
+
+  addPetals("back", 45, 130, 180);
+  addPetals("mid", 65, 90, 130);
+  addPetals("front", 85, 55, 85);
+
+  let c = 3;
+  const cd = document.getElementById("countdown");
+  const timer = setInterval(() => {
+    c--;
+    cd.textContent = c;
+    if (c === 0) {
+      clearInterval(timer);
+      cd.textContent = "NOW 💕";
+    }
+  }, 1000);
 
   function startExperience() {
     if (started) return;
     started = true;
 
-    // ✅ AUDIO — FIRST, IMMEDIATE, SAME TAP
-    music.volume = 0.6;
-    music.play().catch(() => {});
+    /* 🔓 AUDIO UNLOCK (THIS IS THE KEY) */
+    music.muted = true;
+    music.currentTime = 0;
+    music.play().then(() => {
+      setTimeout(() => {
+        music.muted = false;
+        music.volume = 0.5;
+      }, 100);
+    }).catch(() => {});
 
-    // then visuals
-    overlay.remove();
+    overlay.style.opacity = "0";
+    setTimeout(() => overlay.remove(), 200);
 
     document.querySelectorAll(".petal").forEach((p, i) => {
-      setTimeout(() => p.classList.add("fly"), i * 25);
+      setTimeout(() => p.classList.add("fly"), i * 6);
     });
 
     setTimeout(() => {
-      petalLayer.remove();
+      layer.remove();
       message.style.opacity = 1;
-    }, 1800);
+    }, 2600);
   }
 
-  // ✅ ONE listener is enough
-  overlay.addEventListener("click", startExperience);
   overlay.addEventListener("touchstart", startExperience, { passive: true });
+  overlay.addEventListener("pointerdown", startExperience);
+  overlay.addEventListener("click", startExperience);
 </script>
+
+</body>
+</html>
