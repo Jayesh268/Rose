@@ -15,10 +15,11 @@
     background: linear-gradient(to bottom, #ffe6eb, #fff5f7);
   }
 
-  /* PETAL LAYERS */
+  /* PETAL CONTAINER */
   .petal-layer {
     position: fixed;
     inset: 0;
+    z-index: 2;
     pointer-events: none;
   }
 
@@ -28,30 +29,29 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    transition: transform 2s ease, opacity 2s ease;
-    opacity: 1; /* FULL visibility */
-    filter: saturate(1.6) contrast(1.15);
+    opacity: 1; /* FULLY OPAQUE */
+    transition: transform 2.2s ease, opacity 2.2s ease;
   }
 
-  /* Depth without transparency */
+  /* DEPTH (NO TRANSPARENCY) */
   .back {
-    filter: saturate(1.4) blur(1.5px);
+    filter: blur(2px) saturate(1.4);
   }
 
   .mid {
-    filter: saturate(1.6);
+    filter: saturate(1.7);
   }
 
   .front {
-    filter: saturate(1.8)
-            drop-shadow(0 6px 8px rgba(0,0,0,0.3));
+    filter: saturate(1.9)
+            drop-shadow(0 8px 10px rgba(0,0,0,0.35));
   }
 
   .fly {
     transform: translate(
-      calc((Math.random() - 0.5) * 180vw),
-      calc((Math.random() - 0.5) * 180vh)
-    ) rotate(720deg) scale(0.25);
+      calc((Math.random() - 0.5) * 200vw),
+      calc((Math.random() - 0.5) * 200vh)
+    ) rotate(900deg) scale(0.25);
     opacity: 0;
   }
 
@@ -60,7 +60,7 @@
     position: fixed;
     inset: 0;
     z-index: 5;
-    background: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.92);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -69,19 +69,14 @@
   }
 
   #overlay h2 {
-    font-size: 2rem;
+    font-size: 2.2rem;
     color: #e63946;
   }
 
   #countdown {
-    font-size: 3rem;
-    margin-top: 10px;
-  }
-
-  #tap {
-    font-size: 1.2rem;
-    margin-top: 20px;
-    color: #444;
+    font-size: 3.4rem;
+    margin-top: 12px;
+    font-weight: bold;
   }
 
   /* MESSAGE */
@@ -93,25 +88,25 @@
     justify-content: center;
     align-items: center;
     opacity: 0;
-    transition: opacity 2s ease;
+    transition: opacity 2.5s ease;
   }
 
   .card {
     background: white;
-    padding: 28px;
-    border-radius: 18px;
-    box-shadow: 0 14px 40px rgba(0,0,0,0.18);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 16px 45px rgba(0,0,0,0.2);
     max-width: 90%;
     text-align: center;
   }
 
   .card h1 {
-    font-size: 2.7rem;
+    font-size: 2.8rem;
     color: #e63946;
   }
 
   .card p {
-    font-size: 1.5rem;
+    font-size: 1.55rem;
     color: #555;
   }
 </style>
@@ -119,29 +114,31 @@
 
 <body>
 
+<!-- OVERLAY -->
 <div id="overlay">
-  <h2>Shake your screen in</h2>
+  <h2>Tap anywhere in</h2>
   <div id="countdown">3</div>
-  <div id="tap">( tap anywhere )</div>
 </div>
 
+<!-- PETALS -->
 <div class="petal-layer" id="petals"></div>
 
+<!-- MESSAGE -->
 <div id="message">
   <div class="card">
     <h1>Happy Rose Day 🌹</h1>
     <p>
-      Like these petals scattered everywhere,<br>
-      my love reached you fully —<br>
-      visible, real, and deep 🤍
+      These petals were everywhere,<br>
+      just like my love for you —<br>
+      real, visible, and deep 🤍
     </p>
   </div>
 </div>
 
 <script>
-  const petalContainer = document.getElementById("petals");
+  const container = document.getElementById("petals");
   const overlay = document.getElementById("overlay");
-  let cleared = false;
+  let finished = false;
 
   function addPetals(layer, count, min, max) {
     for (let i = 0; i < count; i++) {
@@ -155,16 +152,16 @@
       p.style.top = Math.random() * innerHeight + "px";
       p.style.transform = `rotate(${Math.random() * 360}deg)`;
 
-      petalContainer.appendChild(p);
+      container.appendChild(p);
     }
   }
 
-  /* Create depth with FULL visibility */
-  addPetals("back", 45, 100, 140);
-  addPetals("mid", 65, 70, 100);
-  addPetals("front", 80, 45, 75);
+  /* STRONG DEPTH */
+  addPetals("back", 50, 120, 170);
+  addPetals("mid", 70, 80, 120);
+  addPetals("front", 90, 50, 80);
 
-  /* Countdown */
+  /* COUNTDOWN */
   let c = 3;
   const cd = document.getElementById("countdown");
   const timer = setInterval(() => {
@@ -177,8 +174,8 @@
   }, 1000);
 
   function clearPetals() {
-    if (cleared) return;
-    cleared = true;
+    if (finished) return;
+    finished = true;
 
     overlay.style.display = "none";
 
@@ -187,28 +184,13 @@
     });
 
     setTimeout(() => {
-      petalContainer.remove();
+      container.remove();
       document.getElementById("message").style.opacity = 1;
-    }, 2300);
+    }, 2600);
   }
 
-  /* Mobile permission */
-  overlay.addEventListener("click", async () => {
-    if (typeof DeviceMotionEvent?.requestPermission === "function") {
-      try { await DeviceMotionEvent.requestPermission(); } catch {}
-    }
-  });
-
-  /* Shake */
-  window.addEventListener("devicemotion", e => {
-    const a = e.accelerationIncludingGravity;
-    if (a && (Math.abs(a.x) > 14 || Math.abs(a.y) > 14)) {
-      clearPetals();
-    }
-  });
-
-  /* Desktop fallback */
-  window.addEventListener("mousedown", clearPetals);
+  /* TAP ANYWHERE (MOBILE + LAPTOP) */
+  window.addEventListener("click", clearPetals);
 </script>
 
 </body>
