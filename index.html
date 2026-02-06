@@ -15,8 +15,8 @@
     background: linear-gradient(to bottom, #ffe6eb, #fff5f7);
   }
 
-  /* PETAL CONTAINER */
-  .petal-layer {
+  /* PETAL LAYER */
+  #petal-layer {
     position: fixed;
     inset: 0;
     z-index: 2;
@@ -29,30 +29,28 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    opacity: 1; /* FULLY OPAQUE */
-    transition: transform 2.2s ease, opacity 2.2s ease;
+    opacity: 1;
+    will-change: transform, opacity;
+    transition:
+      transform 2.8s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 2.2s ease;
   }
 
-  /* DEPTH (NO TRANSPARENCY) */
-  .back {
-    filter: blur(2px) saturate(1.4);
-  }
-
-  .mid {
-    filter: saturate(1.7);
-  }
-
+  /* DEPTH */
+  .back  { filter: blur(2px) saturate(1.4); }
+  .mid   { filter: saturate(1.7); }
   .front {
     filter: saturate(1.9)
-            drop-shadow(0 8px 10px rgba(0,0,0,0.35));
+            drop-shadow(0 8px 12px rgba(0,0,0,0.35));
   }
 
   .fly {
-    transform: translate(
-      calc((Math.random() - 0.5) * 200vw),
-      calc((Math.random() - 0.5) * 200vh)
-    ) rotate(900deg) scale(0.25);
     opacity: 0;
+    transform: translate3d(
+      calc((var(--dx)) * 1px),
+      calc((var(--dy)) * 1px),
+      0
+    ) rotate(var(--rot)) scale(0.2);
   }
 
   /* OVERLAY */
@@ -66,6 +64,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
+    touch-action: manipulation;
   }
 
   #overlay h2 {
@@ -88,7 +87,7 @@
     justify-content: center;
     align-items: center;
     opacity: 0;
-    transition: opacity 2.5s ease;
+    transition: opacity 2.8s ease;
   }
 
   .card {
@@ -121,7 +120,7 @@
 </div>
 
 <!-- PETALS -->
-<div class="petal-layer" id="petals"></div>
+<div id="petal-layer"></div>
 
 <!-- MESSAGE -->
 <div id="message">
@@ -130,38 +129,47 @@
     <p>
       These petals were everywhere,<br>
       just like my love for you —<br>
-      real, visible, and deep 🤍
+      real, deep, and always there 🤍
     </p>
   </div>
 </div>
 
 <script>
-  const container = document.getElementById("petals");
+  const layer = document.getElementById("petal-layer");
   const overlay = document.getElementById("overlay");
-  let finished = false;
+  const message = document.getElementById("message");
+  let done = false;
 
-  function addPetals(layer, count, min, max) {
+  function addPetals(type, count, min, max) {
     for (let i = 0; i < count; i++) {
       const p = document.createElement("div");
-      p.className = `petal ${layer}`;
+      p.className = `petal ${type}`;
 
       const size = min + Math.random() * (max - min);
+      const x = Math.random() * innerWidth;
+      const y = Math.random() * innerHeight;
+
       p.style.width = size + "px";
       p.style.height = size + "px";
-      p.style.left = Math.random() * innerWidth + "px";
-      p.style.top = Math.random() * innerHeight + "px";
+      p.style.left = x + "px";
+      p.style.top = y + "px";
       p.style.transform = `rotate(${Math.random() * 360}deg)`;
 
-      container.appendChild(p);
+      // Pre-calc smooth fly-away vectors
+      p.style.setProperty("--dx", (Math.random() - 0.5) * innerWidth * 2);
+      p.style.setProperty("--dy", (Math.random() - 0.5) * innerHeight * 2);
+      p.style.setProperty("--rot", `${720 + Math.random() * 720}deg`);
+
+      layer.appendChild(p);
     }
   }
 
-  /* STRONG DEPTH */
-  addPetals("back", 50, 120, 170);
-  addPetals("mid", 70, 80, 120);
-  addPetals("front", 90, 50, 80);
+  // Strong depth
+  addPetals("back", 45, 130, 180);
+  addPetals("mid", 65, 90, 130);
+  addPetals("front", 85, 55, 85);
 
-  /* COUNTDOWN */
+  // Countdown
   let c = 3;
   const cd = document.getElementById("countdown");
   const timer = setInterval(() => {
@@ -174,23 +182,26 @@
   }, 1000);
 
   function clearPetals() {
-    if (finished) return;
-    finished = true;
+    if (done) return;
+    done = true;
 
-    overlay.style.display = "none";
+    overlay.style.opacity = "0";
+    setTimeout(() => overlay.remove(), 300);
 
     document.querySelectorAll(".petal").forEach((p, i) => {
-      setTimeout(() => p.classList.add("fly"), i * 4);
+      setTimeout(() => p.classList.add("fly"), i * 6);
     });
 
     setTimeout(() => {
-      container.remove();
-      document.getElementById("message").style.opacity = 1;
+      layer.remove();
+      message.style.opacity = 1;
     }, 2600);
   }
 
-  /* TAP ANYWHERE (MOBILE + LAPTOP) */
-  window.addEventListener("click", clearPetals);
+  /* MOBILE-FIRST EVENTS */
+  overlay.addEventListener("touchstart", clearPetals, { passive: true });
+  overlay.addEventListener("pointerdown", clearPetals);
+  overlay.addEventListener("click", clearPetals);
 </script>
 
 </body>
