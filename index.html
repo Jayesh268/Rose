@@ -15,6 +15,7 @@
     background: linear-gradient(to bottom, #ffe6eb, #fff5f7);
   }
 
+  /* PETAL LAYER */
   #petal-layer {
     position: fixed;
     inset: 0;
@@ -35,6 +36,7 @@
       opacity 2.2s ease;
   }
 
+  /* DEPTH */
   .back  { filter: blur(2px) saturate(1.4); }
   .mid   { filter: saturate(1.7); }
   .front {
@@ -45,12 +47,13 @@
   .fly {
     opacity: 0;
     transform: translate3d(
-      calc((var(--dx)) * 1px),
-      calc((var(--dy)) * 1px),
+      calc(var(--dx) * 1px),
+      calc(var(--dy) * 1px),
       0
-    ) rotate(var(--rot)) scale(0.2);
+    ) rotate(var(--rot)) scale(0.25);
   }
 
+  /* OVERLAY */
   #overlay {
     position: fixed;
     inset: 0;
@@ -75,6 +78,7 @@
     font-weight: bold;
   }
 
+  /* MESSAGE */
   #message {
     position: fixed;
     inset: 0;
@@ -109,16 +113,24 @@
 
 <body>
 
-<!-- AUDIO -->
-<audio id="bg-music" src="lavie.mp3" preload="auto"></audio>
+<!-- 🎵 AUDIO (MOBILE SAFE) -->
+<audio
+  id="bg-music"
+  src="lavie.mp3"
+  preload="auto"
+  playsinline
+></audio>
 
+<!-- OVERLAY -->
 <div id="overlay">
   <h2>Tap anywhere in</h2>
   <div id="countdown">3</div>
 </div>
 
+<!-- PETALS -->
 <div id="petal-layer"></div>
 
+<!-- MESSAGE -->
 <div id="message">
   <div class="card">
     <h1>Happy Rose Day 🌹</h1>
@@ -136,7 +148,7 @@
   const message = document.getElementById("message");
   const music = document.getElementById("bg-music");
 
-  let done = false;
+  let started = false;
 
   function addPetals(type, count, min, max) {
     for (let i = 0; i < count; i++) {
@@ -148,20 +160,22 @@
       p.style.height = size + "px";
       p.style.left = Math.random() * innerWidth + "px";
       p.style.top = Math.random() * innerHeight + "px";
+      p.style.transform = `rotate(${Math.random() * 360}deg)`;
 
       p.style.setProperty("--dx", (Math.random() - 0.5) * innerWidth * 2);
       p.style.setProperty("--dy", (Math.random() - 0.5) * innerHeight * 2);
       p.style.setProperty("--rot", `${720 + Math.random() * 720}deg`);
 
-      p.style.transform = `rotate(${Math.random() * 360}deg)`;
       layer.appendChild(p);
     }
   }
 
+  /* STRONG DEPTH */
   addPetals("back", 45, 130, 180);
   addPetals("mid", 65, 90, 130);
   addPetals("front", 85, 55, 85);
 
+  /* COUNTDOWN */
   let c = 3;
   const cd = document.getElementById("countdown");
   const timer = setInterval(() => {
@@ -174,15 +188,16 @@
   }, 1000);
 
   function startExperience() {
-    if (done) return;
-    done = true;
+    if (started) return;
+    started = true;
 
-    // 🎵 Start music on first interaction (mobile-safe)
+    /* 🎵 START MUSIC (DIRECT USER TAP) */
+    music.currentTime = 0;
     music.volume = 0.5;
     music.play().catch(() => {});
 
     overlay.style.opacity = "0";
-    setTimeout(() => overlay.remove(), 300);
+    setTimeout(() => overlay.remove(), 250);
 
     document.querySelectorAll(".petal").forEach((p, i) => {
       setTimeout(() => p.classList.add("fly"), i * 6);
@@ -194,6 +209,7 @@
     }, 2600);
   }
 
+  /* MOBILE + DESKTOP EVENTS */
   overlay.addEventListener("touchstart", startExperience, { passive: true });
   overlay.addEventListener("pointerdown", startExperience);
   overlay.addEventListener("click", startExperience);
