@@ -15,20 +15,18 @@
     background: linear-gradient(to bottom, #ffe6eb, #fff5f7);
   }
 
-  /* FULL PETAL WALL */
-  #petal-wall {
+  /* PETAL LAYER */
+  #petal-layer {
     position: fixed;
     inset: 0;
     z-index: 2;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 50px);
-    grid-auto-rows: 50px;
-    justify-content: center;
-    align-content: center;
-    background: #fff0f3;
+    pointer-events: none;
   }
 
   .petal {
+    position: absolute;
+    width: 40px;
+    height: 40px;
     background-image: url("petal.png");
     background-size: contain;
     background-repeat: no-repeat;
@@ -38,9 +36,9 @@
 
   .petal.fly {
     transform: translate(
-      calc((Math.random() - 0.5) * 140vw),
-      calc((Math.random() - 0.5) * 140vh)
-    ) rotate(720deg);
+      calc((Math.random() - 0.5) * 160vw),
+      calc((Math.random() - 0.5) * 160vh)
+    ) rotate(720deg) scale(0.2);
     opacity: 0;
   }
 
@@ -107,61 +105,73 @@
   <div id="countdown">3</div>
 </div>
 
-<div id="petal-wall"></div>
+<div id="petal-layer"></div>
 
 <div id="message">
   <div class="card">
     <h1>Happy Rose Day 🌹</h1>
     <p>
-      Beneath all these petals,<br>
-      there was always my love for you 🤍
+      Like these scattered petals,<br>
+      my love for you fell everywhere —<br>
+      gently, naturally, completely 🤍
     </p>
   </div>
 </div>
 
 <script>
-  const wall = document.getElementById("petal-wall");
+  const layer = document.getElementById("petal-layer");
+  const PETAL_COUNT = Math.floor((window.innerWidth * window.innerHeight) / 3500);
 
-  function fillPetals() {
-    const cols = Math.ceil(window.innerWidth / 50);
-    const rows = Math.ceil(window.innerHeight / 50);
-    const total = cols * rows;
-
-    for (let i = 0; i < total; i++) {
+  function sprinklePetals() {
+    for (let i = 0; i < PETAL_COUNT; i++) {
       const p = document.createElement("div");
       p.className = "petal";
-      wall.appendChild(p);
+
+      const size = 30 + Math.random() * 30;
+      const x = Math.random() * window.innerWidth;
+      const y = Math.random() * window.innerHeight;
+      const rot = Math.random() * 360;
+      const opacity = 0.6 + Math.random() * 0.4;
+
+      p.style.width = size + "px";
+      p.style.height = size + "px";
+      p.style.left = x + "px";
+      p.style.top = y + "px";
+      p.style.transform = `rotate(${rot}deg)`;
+      p.style.opacity = opacity;
+
+      layer.appendChild(p);
     }
   }
 
-  fillPetals();
+  sprinklePetals();
 
   /* Countdown */
-  let count = 3;
+  let c = 3;
   const cd = document.getElementById("countdown");
   const timer = setInterval(() => {
-    count--;
-    cd.textContent = count;
-    if (count === 0) {
+    c--;
+    cd.textContent = c;
+    if (c === 0) {
       clearInterval(timer);
       cd.textContent = "NOW 💕";
     }
   }, 1000);
 
-  let cleared = false;
+  let done = false;
 
   function clearPetals() {
-    if (cleared) return;
-    cleared = true;
+    if (done) return;
+    done = true;
 
     document.getElementById("overlay").style.display = "none";
 
     document.querySelectorAll(".petal").forEach((p, i) => {
-      setTimeout(() => p.classList.add("fly"), i * 6);
+      setTimeout(() => p.classList.add("fly"), i * 5);
     });
 
     setTimeout(() => {
-      wall.remove();
+      layer.remove();
       document.getElementById("message").style.opacity = 1;
     }, 2000);
   }
