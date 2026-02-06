@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Happy Rose Day 🌹</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
 
 <style>
   body {
@@ -13,25 +13,24 @@
     overflow: hidden;
     font-family: 'Dancing Script', cursive;
 
-    /* 🌹 Animated rose gradient */
     background: linear-gradient(
-      120deg,
-      #ffd6dc,
-      #ff9aa9,
-      #e63946,
-      #b11226
+      135deg,
+      #ffe1e8,
+      #ffb3c1,
+      #ff758f,
+      #e63946
     );
-    background-size: 300% 300%;
-    animation: roseGradient 18s ease infinite;
+    background-size: 400% 400%;
+    animation: roseFlow 22s ease-in-out infinite;
   }
 
-  @keyframes roseGradient {
+  @keyframes roseFlow {
     0%   { background-position: 0% 50%; }
     50%  { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
 
-  /* 🌗 Soft vignette */
+  /* Soft vignette */
   body::after {
     content: "";
     position: fixed;
@@ -40,11 +39,41 @@
     z-index: 0;
     background: radial-gradient(
       ellipse at center,
-      rgba(0,0,0,0) 55%,
-      rgba(0,0,0,0.18) 100%
+      rgba(0,0,0,0) 62%,
+      rgba(0,0,0,0.14) 100%
     );
   }
 
+  /* Sparkles */
+  .sparkle-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .sparkle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, #fff 0%, rgba(255,255,255,0) 70%);
+    opacity: 0.6;
+    animation: floatSparkle linear infinite;
+  }
+
+  @keyframes floatSparkle {
+    from {
+      transform: translateY(100vh) scale(0.6);
+      opacity: 0;
+    }
+    20% { opacity: 0.6; }
+    to {
+      transform: translateY(-10vh) scale(1);
+      opacity: 0;
+    }
+  }
+
+  /* Petals */
   #petal-layer {
     position: fixed;
     inset: 0;
@@ -58,18 +87,7 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    opacity: 1;
-    will-change: transform, opacity;
-    transition:
-      transform 2.8s cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 2.2s ease;
-  }
-
-  .back  { filter: blur(2px) saturate(1.4); }
-  .mid   { filter: saturate(1.7); }
-  .front {
-    filter: saturate(1.9)
-            drop-shadow(0 8px 12px rgba(0,0,0,0.35));
+    transition: transform 3.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 2.8s ease;
   }
 
   .fly {
@@ -78,33 +96,40 @@
       calc(var(--dx) * 1px),
       calc(var(--dy) * 1px),
       0
-    ) rotate(var(--rot)) scale(0.25);
+    ) rotate(var(--rot)) scale(0.2);
   }
 
+  /* Overlay */
   #overlay {
     position: fixed;
     inset: 0;
     z-index: 5;
-    background: rgba(255,255,255,0.92);
+    background: rgba(255,255,255,0.9);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    touch-action: manipulation;
   }
 
   #overlay h2 {
-    font-size: 2.2rem;
+    font-size: 2.4rem;
     color: #e63946;
+    animation: softBlink 1.8s ease-in-out infinite;
+  }
+
+  @keyframes softBlink {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.75; }
   }
 
   #countdown {
-    font-size: 3.4rem;
+    font-size: 3.6rem;
     margin-top: 12px;
     font-weight: bold;
   }
 
+  /* Message */
   #message {
     position: fixed;
     inset: 0;
@@ -113,39 +138,51 @@
     justify-content: center;
     align-items: center;
     opacity: 0;
-    transition: opacity 2.8s ease;
+    transition: opacity 3s ease;
   }
 
   .card {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    max-width: 90%;
+    background: #fff9fb;
+    padding: 36px;
+    border-radius: 28px;
     text-align: center;
-    position: relative;
-
-    /* ✨ Subtle rose glow */
     box-shadow:
-      0 16px 45px rgba(0,0,0,0.2),
-      0 0 60px rgba(255,160,175,0.6);
+      0 20px 60px rgba(0,0,0,0.25),
+      0 0 100px rgba(255,140,165,0.75);
+    animation: glowPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes glowPulse {
+    0%,100% { box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 0 90px rgba(255,140,165,0.7); }
+    50% { box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 0 120px rgba(255,160,180,0.9); }
   }
 
   .card h1 {
-    font-size: 2.8rem;
+    font-size: 3.2rem;
+    color: #d62839;
+    margin-bottom: 6px;
+  }
+
+  .name {
+    font-size: 2.2rem;
     color: #e63946;
+    margin-bottom: 18px;
+    letter-spacing: 2px;
   }
 
   .card p {
-    font-size: 1.55rem;
+    font-size: 1.6rem;
     color: #555;
+    line-height: 1.55;
   }
 </style>
 </head>
 
 <body>
 
-<!-- AUDIO -->
 <audio id="bg-music" src="lavie.mp3" preload="auto" playsinline></audio>
+
+<div class="sparkle-layer" id="sparkles"></div>
 
 <div id="overlay">
   <h2>Tap anywhere in</h2>
@@ -157,6 +194,7 @@
 <div id="message">
   <div class="card">
     <h1>Joyeuse Journée de la Rose 🌹</h1>
+    <div class="name" id="name"></div>
     <p>
       These petals were everywhere,<br>
       just like my love for you —<br>
@@ -166,37 +204,38 @@
 </div>
 
 <script>
-  const layer = document.getElementById("petal-layer");
   const overlay = document.getElementById("overlay");
   const message = document.getElementById("message");
+  const nameEl = document.getElementById("name");
   const music = document.getElementById("bg-music");
+  const sparkleLayer = document.getElementById("sparkles");
+  const petalLayer = document.getElementById("petal-layer");
 
-  let started = false;
-
-  function addPetals(type, count, min, max) {
-    for (let i = 0; i < count; i++) {
-      const p = document.createElement("div");
-      p.className = `petal ${type}`;
-
-      const size = min + Math.random() * (max - min);
-      p.style.width = size + "px";
-      p.style.height = size + "px";
-      p.style.left = Math.random() * innerWidth + "px";
-      p.style.top = Math.random() * innerHeight + "px";
-      p.style.transform = `rotate(${Math.random() * 360}deg)`;
-
-      p.style.setProperty("--dx", (Math.random() - 0.5) * innerWidth * 2);
-      p.style.setProperty("--dy", (Math.random() - 0.5) * innerHeight * 2);
-      p.style.setProperty("--rot", `${720 + Math.random() * 720}deg`);
-
-      layer.appendChild(p);
-    }
+  // Sparkles
+  for (let i = 0; i < 30; i++) {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.animationDuration = 14 + Math.random() * 8 + "s";
+    s.style.animationDelay = Math.random() * 10 + "s";
+    sparkleLayer.appendChild(s);
   }
 
-  addPetals("back", 45, 130, 180);
-  addPetals("mid", 65, 90, 130);
-  addPetals("front", 85, 55, 85);
+  // Petals
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement("div");
+    p.className = "petal";
+    p.style.width = 60 + Math.random() * 40 + "px";
+    p.style.height = p.style.width;
+    p.style.left = Math.random() * innerWidth + "px";
+    p.style.top = Math.random() * innerHeight + "px";
+    p.style.setProperty("--dx", (Math.random() - 0.5) * innerWidth * 2);
+    p.style.setProperty("--dy", (Math.random() - 0.5) * innerHeight * 2);
+    p.style.setProperty("--rot", `${720 + Math.random() * 720}deg`);
+    petalLayer.appendChild(p);
+  }
 
+  // Countdown
   let c = 3;
   const cd = document.getElementById("countdown");
   const timer = setInterval(() => {
@@ -208,35 +247,44 @@
     }
   }, 1000);
 
-  function startExperience() {
-    if (started) return;
-    started = true;
+  function typeName(text) {
+    let i = 0;
+    const interval = setInterval(() => {
+      nameEl.textContent += text[i];
+      i++;
+      if (i === text.length) clearInterval(interval);
+    }, 300);
+  }
 
-    music.muted = true;
-    music.currentTime = 0;
+  function fadeInMusic() {
+    let vol = 0;
+    music.volume = 0;
     music.play().then(() => {
-      setTimeout(() => {
-        music.muted = false;
-        music.volume = 0.5;
-      }, 100);
+      const fade = setInterval(() => {
+        vol += 0.02;
+        music.volume = vol;
+        if (vol >= 0.5) clearInterval(fade);
+      }, 120);
     }).catch(() => {});
+  }
 
-    overlay.style.opacity = "0";
-    setTimeout(() => overlay.remove(), 200);
+  function start() {
+    overlay.remove();
+    fadeInMusic();
 
     document.querySelectorAll(".petal").forEach((p, i) => {
       setTimeout(() => p.classList.add("fly"), i * 6);
     });
 
     setTimeout(() => {
-      layer.remove();
+      petalLayer.remove();
       message.style.opacity = 1;
+      typeName("Reeme");
     }, 2600);
   }
 
-  overlay.addEventListener("touchstart", startExperience, { passive: true });
-  overlay.addEventListener("pointerdown", startExperience);
-  overlay.addEventListener("click", startExperience);
+  overlay.addEventListener("click", start);
+  overlay.addEventListener("touchstart", start, { passive: true });
 </script>
 
 </body>
