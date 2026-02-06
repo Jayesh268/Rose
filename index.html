@@ -15,64 +15,77 @@
     background: linear-gradient(to bottom, #ffe6eb, #fff5f7);
   }
 
-  /* Rose petals */
-  .petal {
-    position: fixed;
-    top: -50px;
-    font-size: 24px;
-    animation: fall linear infinite;
-    pointer-events: none;
-  }
-
-  @keyframes fall {
-    to {
-      transform: translateY(110vh) rotate(360deg);
-    }
-  }
-
-  /* Overlay message */
-  .overlay {
+  /* FULL PETAL WALL */
+  #petal-wall {
     position: fixed;
     inset: 0;
-    background: rgba(255, 255, 255, 0.85);
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 50px);
+    grid-auto-rows: 50px;
+    justify-content: center;
+    align-content: center;
+    background: #fff0f3;
+  }
+
+  .petal {
+    background-image: url("petal.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: transform 1.8s ease, opacity 1.8s ease;
+  }
+
+  .petal.fly {
+    transform: translate(
+      calc((Math.random() - 0.5) * 140vw),
+      calc((Math.random() - 0.5) * 140vh)
+    ) rotate(720deg);
+    opacity: 0;
+  }
+
+  /* OVERLAY */
+  #overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    background: rgba(255,255,255,0.85);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 5;
     text-align: center;
   }
 
-  .overlay h2 {
+  #overlay h2 {
     font-size: 2rem;
     color: #e63946;
   }
 
-  .countdown {
+  #countdown {
     font-size: 3rem;
     margin-top: 10px;
-    color: #333;
   }
 
-  /* Main card */
-  .card {
-    position: absolute;
+  /* MESSAGE */
+  #message {
+    position: fixed;
     inset: 0;
+    z-index: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    text-align: center;
     opacity: 0;
-    z-index: 1;
     transition: opacity 2s ease;
   }
 
-  .card-content {
+  .card {
     background: white;
     padding: 25px;
     border-radius: 18px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     max-width: 90%;
+    text-align: center;
   }
 
   .card h1 {
@@ -89,62 +102,43 @@
 
 <body>
 
-<!-- Overlay -->
-<div class="overlay" id="overlay">
+<div id="overlay">
   <h2>Shake your screen in</h2>
-  <div class="countdown" id="countdown">3</div>
+  <div id="countdown">3</div>
 </div>
 
-<!-- Message -->
-<div class="card" id="card">
-  <div class="card-content">
+<div id="petal-wall"></div>
+
+<div id="message">
+  <div class="card">
     <h1>Happy Rose Day 🌹</h1>
     <p>
-      Just like these roses,<br>
-      you filled my world with beauty,<br>
-      warmth and love 🤍
+      Beneath all these petals,<br>
+      there was always my love for you 🤍
     </p>
   </div>
 </div>
 
 <script>
-  const petalCount = 50;
-  let petals = [];
-  let shaken = false;
+  const wall = document.getElementById("petal-wall");
 
-  function createPetals() {
-    for (let i = 0; i < petalCount; i++) {
-      const petal = document.createElement("div");
-      petal.className = "petal";
-      petal.textContent = "🌹";
-      petal.style.left = Math.random() * 100 + "vw";
-      petal.style.animationDuration = 4 + Math.random() * 4 + "s";
-      petal.style.opacity = Math.random();
-      document.body.appendChild(petal);
-      petals.push(petal);
+  function fillPetals() {
+    const cols = Math.ceil(window.innerWidth / 50);
+    const rows = Math.ceil(window.innerHeight / 50);
+    const total = cols * rows;
+
+    for (let i = 0; i < total; i++) {
+      const p = document.createElement("div");
+      p.className = "petal";
+      wall.appendChild(p);
     }
   }
 
-  function removePetals() {
-    petals.forEach((p, i) => {
-      setTimeout(() => {
-        p.style.transition = "transform 1.5s ease, opacity 1.5s ease";
-        p.style.transform = "translateY(-100vh) rotate(720deg)";
-        p.style.opacity = "0";
-      }, i * 30);
-    });
-
-    setTimeout(() => {
-      petals.forEach(p => p.remove());
-      document.getElementById("card").style.opacity = 1;
-    }, 2000);
-  }
+  fillPetals();
 
   /* Countdown */
   let count = 3;
   const cd = document.getElementById("countdown");
-  const overlay = document.getElementById("overlay");
-
   const timer = setInterval(() => {
     count--;
     cd.textContent = count;
@@ -154,28 +148,36 @@
     }
   }, 1000);
 
-  /* Shake detection (mobile) */
+  let cleared = false;
+
+  function clearPetals() {
+    if (cleared) return;
+    cleared = true;
+
+    document.getElementById("overlay").style.display = "none";
+
+    document.querySelectorAll(".petal").forEach((p, i) => {
+      setTimeout(() => p.classList.add("fly"), i * 6);
+    });
+
+    setTimeout(() => {
+      wall.remove();
+      document.getElementById("message").style.opacity = 1;
+    }, 2000);
+  }
+
+  /* Mobile shake */
   if (window.DeviceMotionEvent) {
     window.addEventListener("devicemotion", e => {
-      const acc = e.accelerationIncludingGravity;
-      if (!shaken && (Math.abs(acc.x) > 15 || Math.abs(acc.y) > 15)) {
-        shaken = true;
-        overlay.style.display = "none";
-        removePetals();
+      const a = e.accelerationIncludingGravity;
+      if (Math.abs(a.x) > 14 || Math.abs(a.y) > 14) {
+        clearPetals();
       }
     });
   }
 
-  /* Fallback for laptop (drag mouse) */
-  window.addEventListener("mousemove", e => {
-    if (!shaken && e.buttons === 1) {
-      shaken = true;
-      overlay.style.display = "none";
-      removePetals();
-    }
-  });
-
-  createPetals();
+  /* Desktop fallback */
+  window.addEventListener("mousedown", clearPetals);
 </script>
 
 </body>
