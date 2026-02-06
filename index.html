@@ -15,7 +15,6 @@
     background: linear-gradient(to bottom, #ffe6eb, #fff5f7);
   }
 
-  /* PETAL LAYER */
   #petal-layer {
     position: fixed;
     inset: 0;
@@ -36,7 +35,6 @@
       opacity 2.2s ease;
   }
 
-  /* DEPTH */
   .back  { filter: blur(2px) saturate(1.4); }
   .mid   { filter: saturate(1.7); }
   .front {
@@ -53,7 +51,6 @@
     ) rotate(var(--rot)) scale(0.2);
   }
 
-  /* OVERLAY */
   #overlay {
     position: fixed;
     inset: 0;
@@ -78,7 +75,6 @@
     font-weight: bold;
   }
 
-  /* MESSAGE */
   #message {
     position: fixed;
     inset: 0;
@@ -113,23 +109,23 @@
 
 <body>
 
-<!-- OVERLAY -->
+<!-- AUDIO -->
+<audio id="bg-music" src="lavie.mp3" preload="auto"></audio>
+
 <div id="overlay">
   <h2>Tap anywhere in</h2>
   <div id="countdown">3</div>
 </div>
 
-<!-- PETALS -->
 <div id="petal-layer"></div>
 
-<!-- MESSAGE -->
 <div id="message">
   <div class="card">
     <h1>Happy Rose Day 🌹</h1>
     <p>
       These petals were everywhere,<br>
       just like my love for you —<br>
-      real, deep, and always there 🤍
+      real, deep, and timeless 🤍
     </p>
   </div>
 </div>
@@ -138,6 +134,8 @@
   const layer = document.getElementById("petal-layer");
   const overlay = document.getElementById("overlay");
   const message = document.getElementById("message");
+  const music = document.getElementById("bg-music");
+
   let done = false;
 
   function addPetals(type, count, min, max) {
@@ -146,30 +144,24 @@
       p.className = `petal ${type}`;
 
       const size = min + Math.random() * (max - min);
-      const x = Math.random() * innerWidth;
-      const y = Math.random() * innerHeight;
-
       p.style.width = size + "px";
       p.style.height = size + "px";
-      p.style.left = x + "px";
-      p.style.top = y + "px";
-      p.style.transform = `rotate(${Math.random() * 360}deg)`;
+      p.style.left = Math.random() * innerWidth + "px";
+      p.style.top = Math.random() * innerHeight + "px";
 
-      // Pre-calc smooth fly-away vectors
       p.style.setProperty("--dx", (Math.random() - 0.5) * innerWidth * 2);
       p.style.setProperty("--dy", (Math.random() - 0.5) * innerHeight * 2);
       p.style.setProperty("--rot", `${720 + Math.random() * 720}deg`);
 
+      p.style.transform = `rotate(${Math.random() * 360}deg)`;
       layer.appendChild(p);
     }
   }
 
-  // Strong depth
   addPetals("back", 45, 130, 180);
   addPetals("mid", 65, 90, 130);
   addPetals("front", 85, 55, 85);
 
-  // Countdown
   let c = 3;
   const cd = document.getElementById("countdown");
   const timer = setInterval(() => {
@@ -181,9 +173,13 @@
     }
   }, 1000);
 
-  function clearPetals() {
+  function startExperience() {
     if (done) return;
     done = true;
+
+    // 🎵 Start music on first interaction (mobile-safe)
+    music.volume = 0.5;
+    music.play().catch(() => {});
 
     overlay.style.opacity = "0";
     setTimeout(() => overlay.remove(), 300);
@@ -198,10 +194,9 @@
     }, 2600);
   }
 
-  /* MOBILE-FIRST EVENTS */
-  overlay.addEventListener("touchstart", clearPetals, { passive: true });
-  overlay.addEventListener("pointerdown", clearPetals);
-  overlay.addEventListener("click", clearPetals);
+  overlay.addEventListener("touchstart", startExperience, { passive: true });
+  overlay.addEventListener("pointerdown", startExperience);
+  overlay.addEventListener("click", startExperience);
 </script>
 
 </body>
