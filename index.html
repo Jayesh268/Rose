@@ -12,135 +12,99 @@
     margin: 0;
     overflow: hidden;
     font-family: 'Dancing Script', cursive;
-    /* 🌹 RED ROSE GRADIENT */
-    background: radial-gradient(
-      circle at top,
-      #ffccd5 0%,
-      #ff8fa3 40%,
-      #e63946 100%
-    );
+    background: linear-gradient(135deg, #ffccd5, #e63946);
   }
 
-  /* PETAL LAYER */
-  #petal-layer {
-    position: fixed;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-  }
-
-  .petal {
-    position: absolute;
-    background-image: url("petal.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    opacity: 1;
-    will-change: transform, opacity;
-    transition:
-      transform 2.8s cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 2.2s ease;
-  }
-
-  /* DEPTH */
-  .back  { filter: blur(2px) saturate(1.4); }
-  .mid   { filter: saturate(1.7); }
-  .front {
-    filter: saturate(1.9)
-            drop-shadow(0 10px 14px rgba(0,0,0,0.35));
-  }
-
-  .fly {
-    opacity: 0;
-    transform: translate3d(
-      calc(var(--dx) * 1px),
-      calc(var(--dy) * 1px),
-      0
-    ) rotate(var(--rot)) scale(0.25);
-  }
-
-  /* OVERLAY */
+  /* Overlay */
   #overlay {
     position: fixed;
     inset: 0;
-    z-index: 5;
-    background: rgba(255, 255, 255, 0.88);
+    background: rgba(255,255,255,0.9);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    z-index: 10;
     text-align: center;
-    touch-action: manipulation;
   }
 
   #overlay h2 {
-    font-size: 2.4rem;
+    font-size: 2.2rem;
     color: #e63946;
-    letter-spacing: 1px;
   }
 
   #countdown {
-    font-size: 3.6rem;
-    margin-top: 14px;
+    font-size: 3.5rem;
+    margin-top: 12px;
     font-weight: bold;
   }
 
-  /* MESSAGE */
+  /* Petals */
+  #petal-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .petal {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    background: url("petal.png") center/contain no-repeat;
+    transition: transform 2s ease, opacity 2s ease;
+  }
+
+  .fly {
+    transform: translate(
+      calc((Math.random() - 0.5) * 200vw),
+      calc((Math.random() - 0.5) * 200vh)
+    ) rotate(720deg) scale(0.3);
+    opacity: 0;
+  }
+
+  /* Message */
   #message {
     position: fixed;
     inset: 0;
-    z-index: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 0;
-    transition: opacity 2.8s ease;
+    transition: opacity 2s ease;
+    z-index: 1;
   }
 
   .card {
-    background: #fffafc;
-    padding: 32px;
-    border-radius: 22px;
-    box-shadow: 0 18px 50px rgba(0,0,0,0.25);
-    max-width: 90%;
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
     text-align: center;
-    animation: softPop 1.8s ease;
-  }
-
-  @keyframes softPop {
-    from { transform: scale(0.95); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
+    max-width: 90%;
   }
 
   .card h1 {
     font-size: 3rem;
     color: #d62839;
-    margin-bottom: 12px;
   }
 
   .card p {
     font-size: 1.6rem;
     color: #555;
-    line-height: 1.5;
   }
 </style>
 </head>
 
 <body>
 
-<!-- AUDIO -->
-<audio id="bg-music" src="lavie.mp3" preload="auto" playsinline></audio>
-
-<!-- OVERLAY -->
 <div id="overlay">
   <h2>Tap anywhere in</h2>
   <div id="countdown">3</div>
 </div>
 
-<!-- PETALS -->
 <div id="petal-layer"></div>
 
-<!-- MESSAGE -->
 <div id="message">
   <div class="card">
     <h1>Joyeuse Journée de la Rose 🌹</h1>
@@ -153,77 +117,48 @@
 </div>
 
 <script>
-  const layer = document.getElementById("petal-layer");
   const overlay = document.getElementById("overlay");
+  const countdownEl = document.getElementById("countdown");
+  const petalLayer = document.getElementById("petal-layer");
   const message = document.getElementById("message");
-  const music = document.getElementById("bg-music");
 
-  let started = false;
-
-  function addPetals(type, count, min, max) {
-    for (let i = 0; i < count; show++ && i++) {
-      const p = document.createElement("div");
-      p.className = `petal ${type}`;
-
-      const size = min + Math.random() * (max - min);
-      p.style.width = size + "px";
-      p.style.height = size + "px";
-      p.style.left = Math.random() * innerWidth + "px";
-      p.style.top = Math.random() * innerHeight + "px";
-
-      p.style.setProperty("--dx", (Math.random() - 0.5) * innerWidth * 2);
-      p.style.setProperty("--dy", (Math.random() - 0.5) * innerHeight * 2);
-      p.style.setProperty("--rot", `${720 + Math.random() * 720}deg`);
-
-      p.style.transform = `rotate(${Math.random() * 360}deg)`;
-      layer.appendChild(p);
-    }
+  // Create petals
+  for (let i = 0; i < 40; i++) {
+    const p = document.createElement("div");
+    p.className = "petal";
+    p.style.left = Math.random() * window.innerWidth + "px";
+    p.style.top = Math.random() * window.innerHeight + "px";
+    p.style.transform = `rotate(${Math.random() * 360}deg)`;
+    petalLayer.appendChild(p);
   }
 
-  addPetals("back", 45, 130, 180);
-  addPetals("mid", 65, 90, 130);
-  addPetals("front", 85, 55, 85);
-
-  let c = 3;
-  const cd = document.getElementById("countdown");
+  // Countdown
+  let count = 3;
   const timer = setInterval(() => {
-    c--;
-    cd.textContent = c;
-    if (c === 0) {
+    count--;
+    countdownEl.textContent = count;
+    if (count === 0) {
       clearInterval(timer);
-      cd.textContent = "NOW 💕";
+      countdownEl.textContent = "NOW 💕";
     }
   }, 1000);
 
-  function startExperience() {
-    if (started) return;
-    started = true;
-
-    music.muted = true;
-    music.currentTime = 0;
-    music.play().then(() => {
-      setTimeout(() => {
-        music.muted = false;
-        music.volume = 0.5;
-      }, 120);
-    }).catch(() => {});
-
-    overlay.style.opacity = "0";
-    setTimeout(() => overlay.remove(), 250);
+  // Tap handler (mobile + desktop)
+  function start() {
+    overlay.remove();
 
     document.querySelectorAll(".petal").forEach((p, i) => {
-      setTimeout(() => p.classList.add("fly"), i * 6);
+      setTimeout(() => p.classList.add("fly"), i * 30);
     });
 
     setTimeout(() => {
-      layer.remove();
+      petalLayer.remove();
       message.style.opacity = 1;
-    }, 2600);
+    }, 2000);
   }
 
-  overlay.addEventListener("touchstart", startExperience, { passive: true });
-  overlay.addEventListener("pointerdown", startExperience);
-  overlay.addEventListener("click", startExperience);
+  overlay.addEventListener("touchstart", start, { passive: true });
+  overlay.addEventListener("click", start);
 </script>
 
 </body>
