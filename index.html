@@ -30,7 +30,7 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* 🌗 Romantic vignette */
+  /* 🌗 Soft vignette */
   body::after {
     content: "";
     position: fixed;
@@ -160,17 +160,33 @@
     margin-bottom: 4px;
   }
 
+  /* 🌸 REEME — highlighted */
   .name {
     font-size: 3.4rem;
     color: #ff5c8a;
-    margin-bottom: 18px;
-    text-shadow: 0 0 12px rgba(255,92,138,0.8);
-    animation: nameGlow 2.5s ease-in-out infinite;
+    margin: 12px 0 22px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow:
+      0 0 10px rgba(255, 92, 138, 0.7),
+      0 0 22px rgba(255, 140, 180, 0.6),
+      0 0 40px rgba(255, 180, 200, 0.5);
+    animation: reemeGlow 3s ease-in-out infinite;
   }
 
-  @keyframes nameGlow {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.85; }
+  @keyframes reemeGlow {
+    0%,100% {
+      text-shadow:
+        0 0 10px rgba(255, 92, 138, 0.6),
+        0 0 22px rgba(255, 140, 180, 0.5),
+        0 0 40px rgba(255, 180, 200, 0.4);
+    }
+    50% {
+      text-shadow:
+        0 0 14px rgba(255, 92, 138, 0.9),
+        0 0 30px rgba(255, 140, 180, 0.8),
+        0 0 55px rgba(255, 200, 215, 0.7);
+    }
   }
 
   .card p {
@@ -214,7 +230,7 @@
   const sparkleLayer = document.getElementById("sparkles");
   const petalLayer = document.getElementById("petal-layer");
 
-  /* ✨ Sparkles (more + visible) */
+  /* Sparkles */
   for (let i = 0; i < 45; i++) {
     const s = document.createElement("div");
     s.className = "sparkle";
@@ -224,7 +240,7 @@
     sparkleLayer.appendChild(s);
   }
 
-  /* 🌹 Petals (MORE + BIGGER) */
+  /* Petals */
   for (let i = 0; i < 120; i++) {
     const p = document.createElement("div");
     p.className = "petal";
