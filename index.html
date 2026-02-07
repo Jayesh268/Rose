@@ -30,7 +30,6 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* 🌗 Soft vignette */
   body::after {
     content: "";
     position: fixed;
@@ -44,7 +43,6 @@
     );
   }
 
-  /* ✨ Sparkles */
   .sparkle-layer {
     position: fixed;
     inset: 0;
@@ -73,7 +71,6 @@
     }
   }
 
-  /* 🌹 Petals */
   #petal-layer {
     position: fixed;
     inset: 0;
@@ -101,7 +98,6 @@
     ) rotate(var(--rot)) scale(0.18);
   }
 
-  /* Overlay */
   #overlay {
     position: fixed;
     inset: 0;
@@ -131,7 +127,6 @@
     font-weight: bold;
   }
 
-  /* Message */
   #message {
     position: fixed;
     inset: 0;
@@ -160,7 +155,6 @@
     margin-bottom: 4px;
   }
 
-  /* 🌸 REEME — highlighted */
   .name {
     font-size: 3.4rem;
     color: #ff5c8a;
@@ -215,9 +209,9 @@
     <h1>Joyeuse Journée de la Rose 🌹</h1>
     <div class="name" id="name"></div>
     <p>
-      These petals were everywhere,<br>
-      just like my love for you —<br>
-      real, deep, and timeless 🤍
+      This rose will never die —<br>
+      it lives where time can’t reach,<br>
+      in a love that keeps choosing you 🤍
     </p>
   </div>
 </div>
@@ -230,7 +224,6 @@
   const sparkleLayer = document.getElementById("sparkles");
   const petalLayer = document.getElementById("petal-layer");
 
-  /* Sparkles */
   for (let i = 0; i < 45; i++) {
     const s = document.createElement("div");
     s.className = "sparkle";
@@ -240,7 +233,6 @@
     sparkleLayer.appendChild(s);
   }
 
-  /* Petals */
   for (let i = 0; i < 120; i++) {
     const p = document.createElement("div");
     p.className = "petal";
@@ -255,7 +247,6 @@
     petalLayer.appendChild(p);
   }
 
-  /* Countdown */
   let c = 3;
   const cd = document.getElementById("countdown");
   const timer = setInterval(() => {
